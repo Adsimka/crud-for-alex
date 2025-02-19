@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db
+    driver-class-name: org.h2.Driver
+    username: username
+    password: password
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 600000
+      pool-name: H2HikariPool
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  info:
+    title: CRUD API Documentation
+    description: Description of my CRUD
+    version: 1.0
+    contact:
+      name: Alex
+      email: alex@alex.alex
+  security:
+    enabled: false
