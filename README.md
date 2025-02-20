@@ -62,13 +62,14 @@ The application provides RESTful API endpoints for managing products.
 
 ## API Endpoints
 
-| Method   | Endpoint               | Description                     |
-|----------|------------------------|---------------------------------|
-| `POST`   | `/api/products`        | Create a new product            |
-| `GET`    | `/api/products`        | Get all products                |
-| `GET`    | `/api/products/{id}`   | Get a product by ID             |
-| `PUT`    | `/api/products/{id}`   | Update an existing product      |
-| `DELETE` | `/api/products/{id}`   | Delete a product by ID          |
+| Method   | Endpoint               | Description                   |
+|----------|------------------------|-------------------------------|
+| `POST`   | `/api/products`        | Create a new product          |
+| `GET`    | `/api/products`        | Get all products              |
+| `GET`    | `/api/products/{id}`   | Get a product by ID           |
+| `GET`    | `/api/products/filter` | Search product by name filter |
+| `PUT`    | `/api/products/{id}`   | Update an existing product    |
+| `DELETE` | `/api/products/{id}`   | Delete a product by ID        |
 
 > Note: The `{id}` parameter in the URL represents the unique identifier of the product.
 
@@ -76,4 +77,3 @@ The application provides RESTful API endpoints for managing products.
 
 ## Database Configuration
 > The application uses **H2** as its default database.
-

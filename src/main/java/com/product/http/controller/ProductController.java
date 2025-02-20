@@ -5,6 +5,8 @@ import com.product.dto.EditProductDto;
 import com.product.dto.ReadProductDto;
 import com.product.service.ProductServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +52,10 @@ public class ProductController {
     @GetMapping("/all")
     @Operation(summary = "Get all products")
     public ResponseEntity<List<ReadProductDto>> getAllProducts(
-            @PageableDefault @SortDefault(value = "name", direction = Sort.Direction.DESC) Pageable pageable
+            @Parameter(name = "sort", schema = @Schema(defaultValue = "name,desc"))
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault(value = "name", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
         return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
@@ -58,7 +63,11 @@ public class ProductController {
     @GetMapping("/filter")
     @Operation(summary = "Search products by name filter")
     public ResponseEntity<List<ReadProductDto>> getProductByFilter(
-            @PageableDefault @SortDefault(value = "name", direction = Sort.Direction.DESC) Pageable pageable,
+            @Parameter(name = "sort", schema = @Schema(defaultValue = "name,desc"))
+            @PageableDefault(page = 0, size = 10)
+            @SortDefault(value = "name", direction = Sort.Direction.DESC)
+            Pageable pageable,
+            @Parameter(name = "name", description = "Name filter keyword")
             @RequestParam String name
     ) {
         return ResponseEntity.ok(productService.getProductByFilter(name, pageable));
