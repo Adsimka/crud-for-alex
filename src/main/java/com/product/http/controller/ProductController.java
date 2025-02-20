@@ -8,6 +8,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,7 +37,8 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "Create product")
     public ResponseEntity<ReadProductDto> create(@Valid @RequestBody CreateProductDto productDto) {
-        return ResponseEntity.ok(productService.create(productDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.create(productDto));
     }
 
     @GetMapping("/{id}")
@@ -42,8 +49,19 @@ public class ProductController {
 
     @GetMapping("/all")
     @Operation(summary = "Get all products")
-    public ResponseEntity<List<ReadProductDto>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<List<ReadProductDto>> getAllProducts(
+            @PageableDefault @SortDefault(value = "name", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(productService.getAllProducts(pageable));
+    }
+
+    @GetMapping("/filter")
+    @Operation(summary = "Search products by name filter")
+    public ResponseEntity<List<ReadProductDto>> getProductByFilter(
+            @PageableDefault @SortDefault(value = "name", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam String name
+    ) {
+        return ResponseEntity.ok(productService.getProductByFilter(name, pageable));
     }
 
     @PutMapping("/{id}")
@@ -58,6 +76,8 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete product by id")
     public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.delete(id));
+        return productService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

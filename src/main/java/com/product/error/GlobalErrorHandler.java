@@ -1,6 +1,7 @@
 package com.product.error;
 
 import com.product.error.exception.ProductNotFoundException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -22,15 +23,21 @@ public class GlobalErrorHandler {
 
     @ExceptionHandler(org.springframework.validation.BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(BindException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(BindException exception) {
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach((error) -> {
+        exception.getBindingResult().getFieldErrors().forEach((error) -> {
             String fieldName = error.getField();
             String errorMessage = error.getDefaultMessage();
 
             errors.put(fieldName, errorMessage);
         });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handlePropertyReferenceException(PropertyReferenceException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 }
