@@ -1,12 +1,11 @@
-package com.product.dto;
+package com.product.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record EditProductDto (
+public record ProductEditDto(
         @Size(max = 20, message = "Name cannot exceed 20 characters")
-        @NotBlank(message = "Name cannot be blank")
         String name,
-        @Size(min = 10, max = 50, message = "Description must be between 5 and 50 characters")
+        @Size(max = 50, message = "Description cannot exceed 20 characters")
         String description) {
 }

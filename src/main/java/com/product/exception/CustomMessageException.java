@@ -1,4 +1,4 @@
-package com.product.error.exception;
+package com.product.exception;
 
 public class CustomMessageException extends RuntimeException {
 

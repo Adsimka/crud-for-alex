@@ -1,4 +1,4 @@
-package com.product.error.constants;
+package com.product.util.constants;
 
 import lombok.experimental.UtilityClass;
 

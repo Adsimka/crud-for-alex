@@ -1,24 +1,27 @@
 package com.product.service;
 
-import com.product.dto.CreateProductDto;
-import com.product.dto.EditProductDto;
-import com.product.dto.ReadProductDto;
-import com.product.error.exception.ProductNotFoundException;
+import com.product.model.dto.ProductCreateDto;
+import com.product.model.dto.ProductEditDto;
+import com.product.model.dto.ProductFilterDto;
+import com.product.model.dto.ProductReadDto;
+import com.product.exception.ProductNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.net.URI;
+import java.util.UUID;
 
 public interface ProductService {
 
-    ReadProductDto create(CreateProductDto productDto);
+    URI create(ProductCreateDto productDto);
 
-    ReadProductDto getProduct(Long id) throws ProductNotFoundException;
+    ProductReadDto findById(UUID id) throws ProductNotFoundException;
 
-    List<ReadProductDto> getAllProducts(Pageable pageable);
+    Page<ProductReadDto> findBy(Pageable pageable, ProductFilterDto filter);
 
-    List<ReadProductDto> getProductByFilter(String name, Pageable pageable);
+    ProductReadDto update(UUID id, ProductEditDto productDto);
 
-    ReadProductDto update(Long id, EditProductDto productDto);
+    void delete(UUID id);
 
-    boolean delete(Long id);
+    void deleteBy(ProductFilterDto filter);
 }

@@ -1,15 +1,15 @@
 package com.product.mapper.product;
 
-import com.product.database.entity.Product;
-import com.product.dto.EditProductDto;
+import com.product.model.entity.Product;
+import com.product.model.dto.ProductEditDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
-public interface UpdateProductMapper {
+public interface ProductUpdateMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Product updateProductFromDto(EditProductDto productDto, @MappingTarget Product product);
+    Product updateProductFromDto(ProductEditDto productDto, @MappingTarget Product product);
 }
