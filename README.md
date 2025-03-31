@@ -36,6 +36,7 @@ This is a RESTful CRUD (Create, Read, Update, Delete) application built using **
 Before running the application, ensure you have the following installed:
 
 - **Java 17+**
+- **Postgres**
 - **Maven**
 - **IDE** (IntelliJ IDEA)
 
@@ -62,18 +63,18 @@ The application provides RESTful API endpoints for managing products.
 
 ## API Endpoints
 
-| Method   | Endpoint               | Description                   |
-|----------|------------------------|-------------------------------|
-| `POST`   | `/api/products`        | Create a new product          |
-| `GET`    | `/api/products`        | Get all products              |
-| `GET`    | `/api/products/{id}`   | Get a product by ID           |
-| `GET`    | `/api/products/filter` | Search product by name filter |
-| `PUT`    | `/api/products/{id}`   | Update an existing product    |
-| `DELETE` | `/api/products/{id}`   | Delete a product by ID        |
+| Method   | Endpoint               | Description                 |
+|----------|------------------------|-----------------------------|
+| `POST`   | `/api/products`        | Create a new product        |
+| `GET`    | `/api/products/{id}`   | Get a product by ID         |
+| `GET`    | `/api/products`        | Search product by filter    |
+| `PATCH`  | `/api/products/{id}`   | Update an existing product  |
+| `DELETE` | `/api/products/{id}`   | Delete a product by ID      |
+| `DELETE` | `/api/products`        | Delete a product by filter  |
 
 > Note: The `{id}` parameter in the URL represents the unique identifier of the product.
 
 ---
 
 ## Database Configuration
-> The application uses **H2** as its default database.
+> The application uses PostgreSQL as its database. To set up the environment, run the docker-compose.yml file included in the project to start the PostgreSQL container. Make sure to configure the database credentials (DB_USERNAME and DB_PASSWORD) in your environment variables or .env file.
