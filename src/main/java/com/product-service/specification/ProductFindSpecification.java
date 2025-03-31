@@ -2,7 +2,6 @@ package com.product.specification;
 
 import com.product.model.dto.ProductFilterDto;
 import com.product.model.entity.Product;
-import com.product.util.constants.Constants;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

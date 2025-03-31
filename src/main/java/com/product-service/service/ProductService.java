@@ -1,7 +1,7 @@
 package com.product.service;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.product.model.dto.ProductCreateDto;
-import com.product.model.dto.ProductEditDto;
 import com.product.model.dto.ProductFilterDto;
 import com.product.model.dto.ProductReadDto;
 import com.product.exception.ProductNotFoundException;
@@ -19,7 +19,7 @@ public interface ProductService {
 
     Page<ProductReadDto> findBy(Pageable pageable, ProductFilterDto filter);
 
-    ProductReadDto update(UUID id, ProductEditDto productDto);
+    ProductReadDto update(UUID id, JsonPatch patch);
 
     void delete(UUID id);
 

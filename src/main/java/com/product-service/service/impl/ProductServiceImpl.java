@@ -1,16 +1,19 @@
 package com.product.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.product.mapper.product.ProductCreateMapper;
 import com.product.model.dto.ProductCreateDto;
 import com.product.model.dto.ProductFilterDto;
 import com.product.model.dto.ProductReadDto;
 import com.product.model.entity.Product;
 import com.product.repository.ProductRepository;
-import com.product.model.dto.ProductEditDto;
 import com.product.exception.CustomMessageException;
 import com.product.exception.ProductNotFoundException;
 import com.product.mapper.product.ProductReadMapper;
-import com.product.mapper.product.ProductUpdateMapper;
 import com.product.service.ProductService;
 import com.product.specification.ProductFindSpecification;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +38,10 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductFindSpecification specification;
+    private final ObjectMapper mapper;
     
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
-    private final ProductUpdateMapper productUpdateMapper;
 
     @Transactional
     @Override
@@ -56,7 +59,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductReadDto findById(UUID id)  {
         return productRepository.findById(id)
                 .map(productReadMapper::productToDto)
-                .orElseThrow(() -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id)));
+                .orElseThrow(
+                        () -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id))
+                );
     }
 
     @Override
@@ -68,12 +73,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public ProductReadDto update(UUID id, ProductEditDto productDto) {
+    public ProductReadDto update(UUID id, JsonPatch patch) {
         return productRepository.findById(id)
-                .map(product -> productUpdateMapper.updateProductFromDto(productDto, product))
+                .map(product -> applyPatch(product, patch))
                 .map(productRepository::saveAndFlush)
                 .map(productReadMapper::productToDto)
-                .orElseThrow(() -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id)));
+                .orElseThrow(
+                        () -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id))
+                );
     }
 
     @Transactional
@@ -91,5 +98,14 @@ public class ProductServiceImpl implements ProductService {
     public void deleteBy(ProductFilterDto filter) {
         Specification<Product> spec = specification.toSpecification(filter);
         productRepository.delete(spec);
+    }
+
+    private Product applyPatch(Product product, JsonPatch patch) {
+        try {
+            JsonNode patched = patch.apply(mapper.convertValue(product, JsonNode.class));
+            return mapper.treeToValue(patched, Product.class);
+        } catch (JsonPatchException | JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

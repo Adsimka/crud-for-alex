@@ -3,6 +3,7 @@ package com.product.error;
 import com.product.exception.CustomMessageException;
 import com.product.exception.ProductNotFoundException;
 import com.product.model.ErrorResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalErrorHandler {
 
+    @Hidden
     @ExceptionHandler(ProductNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException exception) {
@@ -26,6 +28,7 @@ public class GlobalErrorHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @Hidden
     @ExceptionHandler(org.springframework.validation.BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(BindException exception) {
@@ -43,6 +46,8 @@ public class GlobalErrorHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+
+    @Hidden
     @ExceptionHandler(PropertyReferenceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handlePropertyReferenceException(PropertyReferenceException exception) {
@@ -53,6 +58,8 @@ public class GlobalErrorHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+
+    @Hidden
     @ExceptionHandler(CustomMessageException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handleCustomMessageException(CustomMessageException exception) {
@@ -61,6 +68,18 @@ public class GlobalErrorHandler {
                 exception.getMessage()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+
+    @Hidden
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException exception) {
+        ErrorResponse response = buildResponse(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                exception.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
     }
 
     private ErrorResponse buildResponse(int statusCode, String message) {
