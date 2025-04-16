@@ -1,27 +1,22 @@
 package com.product_service.service;
 
-import com.github.fge.jsonpatch.JsonPatch;
 import com.product_service.exception.ProductNotFoundException;
-import com.product_service.model.dto.ProductCreateDto;
-import com.product_service.model.dto.ProductFilterDto;
-import com.product_service.model.dto.ProductReadDto;
-import org.springframework.data.domain.Page;
+import com.product_service.model.dto.*;
 import org.springframework.data.domain.Pageable;
 
-import java.net.URI;
 import java.util.UUID;
 
 public interface ProductService {
 
-    URI create(ProductCreateDto productDto);
+    UUID create(ProductCreateDto productDto);
 
     ProductReadDto findById(UUID id) throws ProductNotFoundException;
 
-    Page<ProductReadDto> findBy(Pageable pageable, ProductFilterDto filter);
+    PageDto<ProductReadDto> findBy(Pageable pageable, ProductFilter filter);
 
-    ProductReadDto update(UUID id, JsonPatch patch);
+    ProductReadDto update(UUID id, ProductUpdateDto dto);
 
     void delete(UUID id);
 
-    void deleteBy(ProductFilterDto filter);
+    void deleteByName(String name);
 }
