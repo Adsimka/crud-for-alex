@@ -10,18 +10,11 @@ import static com.product_service.util.constants.Constants.PERCENT;
 @UtilityClass
 public class SpecificationUtils {
 
-    public static Specification<Product> nameContains(String name) {
-        return ((root, query, criteriaBuilder) -> StringUtils.hasText(name)
-                ? criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), createSearchPattern(name))
+    public static Specification<Product> fieldContains(String field, String fieldName) {
+        return ((root, query, criteriaBuilder) -> StringUtils.hasText(field)
+                ? criteriaBuilder.like(criteriaBuilder.lower(root.get(fieldName)), createSearchPattern(field))
                 : null);
     }
-
-    public static Specification<Product> descriptionContains(String description) {
-        return ((root, query, criteriaBuilder) -> StringUtils.hasText(description)
-                ? criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), createSearchPattern(description))
-                : null);
-    }
-
 
     private String createSearchPattern(String value) {
         return String.format("%s%s%s", PERCENT, value.toLowerCase(), PERCENT);

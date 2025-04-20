@@ -8,18 +8,17 @@ import com.product_service.model.dto.*;
 import com.product_service.model.entity.Product;
 import com.product_service.repository.ProductRepository;
 import com.product_service.service.ProductService;
-import com.product_service.specification.impl.ProductFindSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static com.product_service.util.pageable.PageableUtils.sortIgnoreCase;
+import static com.product_service.util.http.PageableUtils.sortIgnoreCase;
 import static com.product_service.util.constants.ErrorMessageConstants.PRODUCT_NOT_FOUND_MESSAGE;
+import static com.product_service.util.specification.product.ProductSpecificationBuilder.specificationBuild;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,7 +26,6 @@ import static com.product_service.util.constants.ErrorMessageConstants.PRODUCT_N
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductFindSpecification specification;
     
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
@@ -51,9 +49,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageDto<ProductReadDto> findBy(Pageable pageable, ProductFilter filter) {
-        Specification<Product> spec = specification.toSpecification(filter);
-        Page<ProductReadDto> page = productRepository.findAll(spec, sortIgnoreCase(pageable))
-                .map(productReadMapper::productToDto);
+        Page<ProductReadDto> page = productRepository.findAll(
+                specificationBuild(filter),
+                sortIgnoreCase(pageable)
+        ).map(productReadMapper::productToDto);
 
         return new PageDto<>(page);
     }

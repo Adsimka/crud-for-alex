@@ -1,4 +1,4 @@
-package com.product_service.util.pageable;
+package com.product_service.util.http;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;
