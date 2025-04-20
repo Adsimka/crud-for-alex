@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +62,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.findById(id));
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Search products", description = "Search products by filter", responses = {
             @ApiResponse(responseCode = "200", description = "Products found", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProductReadDto.class))
@@ -101,7 +103,8 @@ public class ProductController {
             @Valid @RequestBody ProductUpdateDto dto
     ) {
         return ResponseEntity.accepted().body(
-                productService.update(id, dto));
+                productService.update(id, dto)
+        );
     }
 
     @DeleteMapping("/{id}")
