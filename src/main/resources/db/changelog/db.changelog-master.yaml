@@ -1,3 +1,4 @@
 databaseChangeLog:
-  - include:
-      file: db/changelog/changes/create_product_table.sql
+  - includeAll:
+      path: /sql
+      relativeToChangelogFile: true
