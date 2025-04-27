@@ -13,5 +13,5 @@ public class DetailEditDto {
         JsonNullable<String> supportInfo = JsonNullable.undefined();
 
         @Valid
-        JsonNullable<ManufactureInfoEditDto> dto = JsonNullable.undefined();
+        JsonNullable<ManufactureInfoEditDto> manufacture = JsonNullable.undefined();
 }

@@ -11,6 +11,6 @@ public record ProductCreateDto(
         @Size(min = 10, max = 50, message = "{product.name.size}")
         String description,
         @Valid
-        DetailCreateDto dto
+        DetailCreateDto detail
 ) {
 }

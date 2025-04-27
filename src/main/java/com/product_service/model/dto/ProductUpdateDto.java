@@ -17,5 +17,5 @@ public class ProductUpdateDto {
     private JsonNullable<String> description = JsonNullable.undefined();
 
     @Valid
-    private JsonNullable<DetailEditDto> dto = JsonNullable.undefined();
+    private JsonNullable<DetailEditDto> detail = JsonNullable.undefined();
 }

@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ManufacturerInfo {
 
-    @Column(name = "manufacturer_name", nullable = false)
+    @Column(name = "manufacturer_name")
     private String manufacturerName;
 
     @Column(name = "manufacturer_contact")

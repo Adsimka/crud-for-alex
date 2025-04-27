@@ -9,6 +9,6 @@ public record DetailCreateDto(
         @Size(max = 100, message = "{product.detail.supportInfo.size}")
         String supportInfo,
         @Valid
-        ManufactureInfoCreateDto dto
+        ManufactureInfoCreateDto manufacture
 ) {
 }

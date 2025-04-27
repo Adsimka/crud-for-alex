@@ -9,7 +9,7 @@
 ALTER TABLE public.product
     ADD COLUMN specifications VARCHAR(100), -- Specifications of the product, max 100 characters (business requirement)
     ADD COLUMN support_info VARCHAR(100),   -- Support information, max 100 characters (business requirement)
-    ADD COLUMN manufacturer_name VARCHAR(50) NOT NULL DEFAULT 'Unknown', -- Name of the manufacturer, max 50 characters (business requirement)
+    ADD COLUMN manufacturer_name VARCHAR(50), -- Name of the manufacturer, max 50 characters (business requirement)
     ADD COLUMN manufacturer_contact VARCHAR(100); -- Contact information of the manufacturer, max 100 characters (business requirement)
 
 -- Changeset adsimka:00302
