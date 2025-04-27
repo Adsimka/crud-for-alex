@@ -1,5 +1,6 @@
 package com.product_service.model.entity;
 
+import com.product_service.model.entity.embeddable.Detail;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,7 @@ public class Product {
 
     @Column(name = "description")
     private String description;
+
+    @Embedded
+    private Detail detail;
 }

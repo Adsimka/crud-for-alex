@@ -8,8 +8,8 @@ import org.openapitools.jackson.nullable.JsonNullable;
 @Mapper(config = MappingConfig.class)
 public abstract class JsonNullableMapper {
 
-    public <T> T unwrap(JsonNullable<T> jsonNullable) {
-        return jsonNullable == null ? null : jsonNullable.orElse(null);
+    public <T> T unwrap(JsonNullable<T> nullable) {
+        return nullable == null ? null : nullable.orElse(null);
     }
 
     @Condition
