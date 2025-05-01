@@ -70,8 +70,6 @@ public class ProductController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
             })
     })
-    @Parameter(name = "name", description = "Filter by product name")
-    @Parameter(name = "description", description = "Filter by product description")
     public ResponseEntity<PageDto<ProductReadDto>> findBy(
             ProductFilter filter,
             @PageableDefault(page = 0, size = 10)

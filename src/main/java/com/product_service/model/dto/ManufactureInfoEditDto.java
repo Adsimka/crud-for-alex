@@ -1,8 +1,10 @@
 package com.product_service.model.dto;
 
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.openapitools.jackson.nullable.JsonNullable;
 
+@Getter
 public class ManufactureInfoEditDto {
 
         @Size(max = 50, message = "{product.manufacturer.name.size}")

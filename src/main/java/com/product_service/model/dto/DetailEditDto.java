@@ -2,8 +2,10 @@ package com.product_service.model.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import org.openapitools.jackson.nullable.JsonNullable;
 
+@Getter
 public class DetailEditDto {
 
         @Size(max = 100, message = "{product.detail.specifications.size}")
@@ -13,5 +15,5 @@ public class DetailEditDto {
         JsonNullable<String> supportInfo = JsonNullable.undefined();
 
         @Valid
-        JsonNullable<ManufactureInfoEditDto> manufacture = JsonNullable.undefined();
+        JsonNullable<ManufactureInfoEditDto> manufacturerInfo = JsonNullable.undefined();
 }

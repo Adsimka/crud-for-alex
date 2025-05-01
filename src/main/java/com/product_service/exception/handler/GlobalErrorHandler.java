@@ -8,6 +8,7 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -85,6 +86,17 @@ public class GlobalErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ProblemDetail> handleIllegalArgumentException(IllegalArgumentException exception) {
         log.error("Illegal argument error occured: {}", exception.getMessage(), exception);
+        ProblemDetail response = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ProblemDetail> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+        log.error("Json parse error: {}", exception.getMessage(), exception);
         ProblemDetail response = buildProblemDetail(
                 HttpStatus.BAD_REQUEST,
                 exception.getMessage()

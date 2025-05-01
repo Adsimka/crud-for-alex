@@ -1,9 +1,7 @@
 package com.product_service.service.impl;
 
 import com.product_service.exception.ProductNotFoundException;
-import com.product_service.mapper.product.ProductCreateMapper;
-import com.product_service.mapper.product.ProductReadMapper;
-import com.product_service.mapper.product.ProductUpdateMapper;
+import com.product_service.mapper.ProductMapper;
 import com.product_service.model.dto.*;
 import com.product_service.model.entity.Product;
 import com.product_service.repository.ProductRepository;
@@ -26,22 +24,20 @@ import static com.product_service.util.specification.product.ProductSpecificatio
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    
-    private final ProductReadMapper productReadMapper;
-    private final ProductCreateMapper productCreateMapper;
-    private final ProductUpdateMapper productUpdateMapper;
+
+    private final ProductMapper productMapper;
 
     @Transactional
     @Override
     public UUID create(ProductCreateDto productDto) {
-        Product product = productCreateMapper.dtoToProduct(productDto);
+        Product product = productMapper.dtoToProduct(productDto);
         return productRepository.save(product).getId();
     }
 
     @Override
     public ProductReadDto findById(UUID id)  {
         return productRepository.findById(id)
-                .map(productReadMapper::productToDto)
+                .map(productMapper::productToDto)
                 .orElseThrow(
                         () -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id))
                 );
@@ -52,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductReadDto> page = productRepository.findAll(
                 specificationBuild(filter),
                 sortIgnoreCase(pageable)
-        ).map(productReadMapper::productToDto);
+        ).map(productMapper::productToDto);
 
         return new PageDto<>(page);
     }
@@ -62,10 +58,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductReadDto update(UUID id, ProductUpdateDto dto) {
         return productRepository.findById(id)
                 .map(product -> {
-                    productUpdateMapper.update(dto, product);
+                    productMapper.update(dto, product);
                     return productRepository.save(product);
                 })
-                .map(productReadMapper::productToDto)
+                .map(productMapper::productToDto)
                 .orElseThrow(
                         () -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, id))
                 );

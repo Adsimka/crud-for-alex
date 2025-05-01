@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record ProductCreateDto(
         @Size(max = 20, message = "{product.name.size}")
-        @NotBlank(message = "{product.name.black}")
+        @NotBlank(message = "{product.name.notblank}")
         String name,
         @Size(min = 10, max = 50, message = "{product.description.size}")
         String description,
