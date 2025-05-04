@@ -6,7 +6,9 @@ import com.product_service.model.dto.ProductReadDto;
 import com.product_service.model.dto.ProductUpdateDto;
 import com.product_service.model.entity.Product;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
         config = MappingConfig.class,
