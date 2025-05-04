@@ -14,6 +14,6 @@ public abstract class JsonNullableMapper {
 
     @Condition
     public <T> boolean isPresent(JsonNullable<T> nullable) {
-        return nullable.isPresent();
+        return nullable != null && nullable.isPresent();
     }
 }

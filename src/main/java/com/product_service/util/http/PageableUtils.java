@@ -1,5 +1,6 @@
 package com.product_service.util.http;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +11,8 @@ import java.util.List;
 @UtilityClass
 public class PageableUtils {
 
-    public static Pageable sortIgnoreCase(Pageable pageable) {
+    @NotNull
+    public static Pageable sortIgnoreCase(@NotNull Pageable pageable) {
         List<Sort.Order> orders = pageable.getSort().stream()
                 .map(Sort.Order::ignoreCase)
                 .toList();
