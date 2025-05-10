@@ -1,5 +1,6 @@
 package com.product_service.util.http;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.experimental.UtilityClass;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -9,7 +10,8 @@ import java.util.UUID;
 @UtilityClass
 public class UriBuilder {
 
-    public static URI buildCreateProductUri(UUID id) {
+    @NotNull
+    public static URI buildCreateProductUri(@NotNull UUID id) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

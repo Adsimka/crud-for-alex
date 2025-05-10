@@ -64,8 +64,7 @@ class ProductServiceIntegrationTest {
         product.setDescription("Test Description");
         product.setDetail(detail);
 
-        product = productRepository.save(product);
-        productId = product.getId();
+        productId = productRepository.save(product).getId();
     }
 
     @Test

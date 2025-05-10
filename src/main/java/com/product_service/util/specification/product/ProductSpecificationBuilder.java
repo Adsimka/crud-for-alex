@@ -1,27 +1,27 @@
 package com.product_service.util.specification.product;
 
-import com.product_service.model.dto.ProductFilter;
 import com.product_service.model.entity.Product;
-import com.product_service.util.specification.SpecificationUtils;
+import com.product_service.model.filter.ProductDeleteFilter;
+import com.product_service.model.filter.ProductSearchFilter;
+import com.product_service.util.builder.PredicateBuilder;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
-
-import static com.product_service.util.constants.Constants.DESCRIPTION;
-import static com.product_service.util.constants.Constants.NAME;
 
 @UtilityClass
 public class ProductSpecificationBuilder {
 
-    public static Specification<Product> specificationBuild(ProductFilter filter) {
-        return Specification.where(nameLike(filter.name()))
-                .and(descriptionLike(filter.description()));
+    public static Specification<Product> buildSearchSpecification(ProductSearchFilter filter) {
+        return PredicateBuilder.<Specification<Product>>init()
+                .addString(filter.name(), ProductSpecification::nameLike)
+                .addString(filter.description(), ProductSpecification::descriptionLike)
+                .buildAs(Specification::allOf)
+                .orElseGet(() -> Specification.where(null));
     }
 
-    private static Specification<Product> nameLike(String name) {
-        return SpecificationUtils.fieldContains(name, NAME);
-    }
-
-    private static Specification<Product> descriptionLike(String description) {
-        return SpecificationUtils.fieldContains(description, DESCRIPTION);
+    public static Specification<Product> buildDeleteSpecification(ProductDeleteFilter filter) {
+        return PredicateBuilder.<Specification<Product>>init()
+                .addString(filter.name(), ProductSpecification::nameEqual)
+                .buildAs(Specification::allOf)
+                .orElseGet(null);
     }
 }

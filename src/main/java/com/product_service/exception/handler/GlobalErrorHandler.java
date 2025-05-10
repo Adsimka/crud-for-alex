@@ -1,6 +1,5 @@
 package com.product_service.exception.handler;
 
-import com.product_service.exception.CustomMessageException;
 import com.product_service.exception.ProductNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
@@ -58,17 +57,6 @@ public class GlobalErrorHandler {
                 exception.getMessage()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
-    @ExceptionHandler(CustomMessageException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ProblemDetail> handleCustomMessageException(CustomMessageException exception) {
-        log.error("CustomMessageException occurred: {}", exception.getMessage(), exception);
-        ProblemDetail response = buildProblemDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                exception.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     @ExceptionHandler(IllegalStateException.class)

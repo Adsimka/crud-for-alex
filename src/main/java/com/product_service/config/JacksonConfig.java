@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class JacksonConfig {
 
     @Bean

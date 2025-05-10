@@ -1,8 +1,8 @@
-package com.product_service.model.dto;
+package com.product_service.model.filter;
 
 import jakarta.validation.constraints.Size;
 
-public record ProductFilter(
+public record ProductSearchFilter(
         @Size(max = 20, message = "{product.name.size}")
         String name,
         @Size(max = 50, message = "{product.description.size}")

@@ -4,20 +4,24 @@ import com.product_service.exception.ProductNotFoundException;
 import com.product_service.mapper.ProductMapper;
 import com.product_service.model.dto.*;
 import com.product_service.model.entity.Product;
+import com.product_service.model.filter.ProductDeleteFilter;
+import com.product_service.model.filter.ProductSearchFilter;
 import com.product_service.repository.ProductRepository;
 import com.product_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static com.product_service.util.specification.product.ProductSpecificationBuilder.buildDeleteSpecification;
+import static com.product_service.util.specification.product.ProductSpecificationBuilder.buildSearchSpecification;
 import static com.product_service.util.http.PageableUtils.sortIgnoreCase;
 import static com.product_service.util.constants.ErrorMessageConstants.PRODUCT_NOT_FOUND_MESSAGE;
-import static com.product_service.util.specification.product.ProductSpecificationBuilder.specificationBuild;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -31,11 +35,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public UUID create(ProductCreateDto productDto) {
         Product product = productMapper.dtoToProduct(productDto);
-        return productRepository.save(product).getId();
+        UUID id = productRepository.save(product).getId();
+
+        log.info("Successfully created product with ID: {}", id);
+
+        return id;
     }
 
     @Override
     public ProductReadDto findById(UUID id)  {
+        log.info("Search product with ID: {}", id);
         return productRepository.findById(id)
                 .map(productMapper::productToDto)
                 .orElseThrow(
@@ -44,18 +53,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageDto<ProductReadDto> findBy(Pageable pageable, ProductFilter filter) {
-        Page<ProductReadDto> page = productRepository.findAll(
-                specificationBuild(filter),
-                sortIgnoreCase(pageable)
-        ).map(productMapper::productToDto);
-
-        return new PageDto<>(page);
+    public PageDto<ProductReadDto> findBy(Pageable pageable, ProductSearchFilter filter) {
+        log.info("Searching products with filter: {}", filter);
+        return PageDto.fromPage(
+                productRepository.findAll(buildSearchSpecification(filter), sortIgnoreCase(pageable))
+                        .map(productMapper::productToDto)
+        );
     }
 
     @Transactional
     @Override
     public ProductReadDto update(UUID id, ProductUpdateDto dto) {
+        log.info("Updating product with ID: {}", id);
         return productRepository.findById(id)
                 .map(product -> {
                     productMapper.update(dto, product);
@@ -70,12 +79,14 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void delete(UUID id) {
+        log.info("Deleting product with ID: {}", id);
         productRepository.deleteById(id);
     }
 
     @Transactional
     @Override
-    public void deleteByName(String name) {
-        productRepository.deleteByName(name);
+    public void deleteBy(ProductDeleteFilter filter) {
+        log.info("Deleting products with filter: {}", filter);
+        productRepository.delete(buildDeleteSpecification(filter));
     }
 }

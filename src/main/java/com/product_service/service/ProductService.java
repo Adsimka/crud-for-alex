@@ -2,6 +2,8 @@ package com.product_service.service;
 
 import com.product_service.exception.ProductNotFoundException;
 import com.product_service.model.dto.*;
+import com.product_service.model.filter.ProductDeleteFilter;
+import com.product_service.model.filter.ProductSearchFilter;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
@@ -12,11 +14,11 @@ public interface ProductService {
 
     ProductReadDto findById(UUID id) throws ProductNotFoundException;
 
-    PageDto<ProductReadDto> findBy(Pageable pageable, ProductFilter filter);
+    PageDto<ProductReadDto> findBy(Pageable pageable, ProductSearchFilter filter);
 
     ProductReadDto update(UUID id, ProductUpdateDto dto);
 
     void delete(UUID id);
 
-    void deleteByName(String name);
+    void deleteBy(ProductDeleteFilter filter);
 }
