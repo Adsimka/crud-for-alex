@@ -23,7 +23,7 @@ This is a RESTful CRUD (Create, Read, Update, Delete) application built using **
 - **Create**: Add new products with validation.
 - **Read**: Retrieve all products or fetch a single product by ID.
 - **Update**: Modify existing product details.
-- **Delete**: Remove products by ID.
+- **Delete**: Remove products by filter or ID.
 - **Validation**: Ensure data integrity with field-level validation.
 - **Global Exception Handling**: Handle errors gracefully with custom error messages.
 - **Swagger UI**: Integrated Swagger/OpenAPI for API documentation.
@@ -35,7 +35,8 @@ This is a RESTful CRUD (Create, Read, Update, Delete) application built using **
 
 Before running the application, ensure you have the following installed:
 
-- **Java 17+**
+- **Java 17**
+- **Spring Boot 3.1.4**
 - **Postgres**
 - **Maven**
 - **IDE** (IntelliJ IDEA)
@@ -57,9 +58,6 @@ The application provides RESTful API endpoints for managing products.
 
 ---
 
-### **[API Endpoints](#api-endpoints)**
-
-Этот раздел содержит список доступных API-эндпоинтов.
 
 ## API Endpoints
 
@@ -77,4 +75,11 @@ The application provides RESTful API endpoints for managing products.
 ---
 
 ## Database Configuration
-> The application uses PostgreSQL as its database. To set up the environment, run the docker-compose.yml file included in the project to start the PostgreSQL container. Make sure to configure the database credentials (DB_USERNAME and DB_PASSWORD) in your environment variables or .env file.
+The application uses PostgreSQL as its database. To set up the environment, run the docker-compose.yml file included in the project to start the PostgreSQL container. Make sure to configure the database credentials (DB_USERNAME and DB_PASSWORD) in your environment variables or .env file.
+
+---
+
+## Testing
+
+Integration Testing
+The project includes integration tests for the ProductService using Testcontainers to spin up a PostgreSQL database. Tests cover product updates, handling null values, nested object updates, and error scenarios like non-existing products. Run tests with mvn test under the test profile.
