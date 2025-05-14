@@ -9,6 +9,7 @@ import com.productservice.model.entity.embeddable.Detail;
 import com.productservice.model.entity.embeddable.ManufacturerInfo;
 import com.productservice.repository.ProductRepository;
 import com.productservice.service.ProductService;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class ProductServiceIntegrationTest {
             .withPassword("password");
 
     @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
+    static void configureProperties(@NotNull DynamicPropertyRegistry registry) {
         registry.add("TESTCONTAINERS_POSTGRES_URL", postgres::getJdbcUrl);
         registry.add("TESTCONTAINERS_POSTGRES_USERNAME", postgres::getUsername);
         registry.add("TESTCONTAINERS_POSTGRES_PASSWORD", postgres::getPassword);
