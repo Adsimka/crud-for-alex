@@ -1,39 +1,50 @@
 package com.productservice.util.builder;
 
-import lombok.experimental.UtilityClass;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-@UtilityClass
-public class PredicateBuilder {
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-    public static class Builder<T> {
+@NoArgsConstructor(access = PRIVATE)
+public final class PredicateBuilder<P> {
 
-        private final List<T> conditions = new ArrayList<>();
+    private final List<P> predicates = new ArrayList<>();
 
-        private T buildPredicate = null;
-
-        public Builder<T> addString(String value, Function<String, T> function) {
-            if (value != null && !value.trim().isEmpty()) {
-                conditions.add(function.apply(value));
-            }
-            return this;
-        }
-
-        public Builder<T> buildAs(Function<List<T>, T> function) {
-            buildPredicate = conditions.isEmpty() ? null : function.apply(conditions);
-            return this;
-        }
-
-        public T orElseGet(Supplier<T> supplier) {
-            return buildPredicate != null ? buildPredicate : supplier.get();
-        }
+    public static <P> PredicateBuilder<P> init() {
+        return new PredicateBuilder<>();
     }
 
-    public static <T> Builder<T> init() {
-        return new Builder<>();
+    public <T> PredicateBuilder<P> add(T object, Function<T, P> condition) {
+        if (nonNull(object)) {
+            predicates.add(condition.apply(object));
+        }
+        return this;
+    }
+
+    public PredicateBuilder<P> addString(String string, Function<String, P> condition) {
+        if (isNotBlank(string)) {
+            predicates.add(condition.apply(string));
+        }
+        return this;
+    }
+
+    public <T> PredicateBuilder<P> addCollection(Collection<T> collection, Function<Collection<T>, P> condition) {
+        if (isNotEmpty(collection)) {
+            predicates.add(condition.apply(collection));
+        }
+        return this;
+    }
+
+    public <R> Optional<R> buildAs(Function<? super List<P>, R> condition) {
+        return ofNullable(condition.apply(predicates));
     }
 }

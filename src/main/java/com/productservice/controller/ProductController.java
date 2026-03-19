@@ -46,10 +46,10 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "Create product", description = "Creates a new product", responses = {
             @ApiResponse(responseCode = "201", description = "The product has been created", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+            @ApiResponse(responseCode = "400", description = "Parameter validation error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
             }),
-            @ApiResponse(responseCode = "400", description = "Parameter validation error", content = {
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
             })
     })
