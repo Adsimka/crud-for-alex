@@ -61,6 +61,11 @@ public class ProductServiceImpl implements ProductService {
         );
     }
 
+    @Override
+    public ProductExistsResponse existsById(UUID id) {
+        return productMapper.toExistsResponse(productRepository.existsById(id));
+    }
+
     @Transactional
     @Override
     public ProductReadDto update(UUID id, ProductUpdateDto dto) {

@@ -16,6 +16,8 @@ public interface ProductService {
 
     PageDto<ProductReadDto> findBy(Pageable pageable, ProductSearchFilter filter);
 
+    ProductExistsResponse existsById(UUID id);
+
     ProductReadDto update(UUID id, ProductUpdateDto dto);
 
     void delete(UUID id);

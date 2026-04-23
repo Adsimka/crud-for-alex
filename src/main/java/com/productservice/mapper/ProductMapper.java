@@ -2,6 +2,7 @@ package com.productservice.mapper;
 
 import com.productservice.config.MappingConfig;
 import com.productservice.model.dto.ProductCreateDto;
+import com.productservice.model.dto.ProductExistsResponse;
 import com.productservice.model.dto.ProductReadDto;
 import com.productservice.model.dto.ProductUpdateDto;
 import com.productservice.model.entity.Product;
@@ -19,4 +20,6 @@ public interface ProductMapper {
     ProductReadDto productToDto(Product product);
 
     void update(ProductUpdateDto dto, @MappingTarget Product product);
+
+    ProductExistsResponse toExistsResponse(boolean exists);
 }

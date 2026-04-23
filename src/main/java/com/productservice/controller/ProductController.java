@@ -1,10 +1,7 @@
 package com.productservice.controller;
 
-import com.productservice.model.dto.PageDto;
-import com.productservice.model.dto.ProductCreateDto;
+import com.productservice.model.dto.*;
 import com.productservice.model.filter.ProductSearchFilter;
-import com.productservice.model.dto.ProductReadDto;
-import com.productservice.model.dto.ProductUpdateDto;
 import com.productservice.model.filter.ProductDeleteFilter;
 import com.productservice.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -90,6 +87,16 @@ public class ProductController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(productService.findBy(pageable, filter));
+    }
+
+    @GetMapping("/exists/{id}")
+    @Operation(summary = "Check product existence", description = "Verify if a product exists by its unique ID", responses = {
+            @ApiResponse(responseCode = "200", description = "The product existence", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductExistsResponse.class))
+            })
+    })
+    public ResponseEntity<ProductExistsResponse> existsById(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(productService.existsById(id));
     }
 
     @PatchMapping(value = "/{id}")
