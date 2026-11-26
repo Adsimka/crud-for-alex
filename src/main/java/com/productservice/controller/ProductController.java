@@ -66,6 +66,9 @@ public class ProductController {
             }),
             @ApiResponse(responseCode = "400", description = "Parameter validation error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
             })
     })
     public ResponseEntity<ProductBatchCreateResponse> createBatch(@Valid @RequestBody ProductBatchCreateDto dto) {
