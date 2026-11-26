@@ -12,6 +12,8 @@ public interface ProductService {
 
     UUID create(ProductCreateDto productDto);
 
+    ProductBatchCreateResponse createBatch(ProductBatchCreateDto dto);
+
     ProductReadDto findById(UUID id) throws ProductNotFoundException;
 
     PageDto<ProductReadDto> findBy(Pageable pageable, ProductSearchFilter filter);

@@ -21,5 +21,7 @@ public interface ProductMapper {
 
     void update(ProductUpdateDto dto, @MappingTarget Product product);
 
-    ProductExistsResponse toExistsResponse(boolean exists);
+    default ProductExistsResponse toExistsResponse(boolean exists) {
+        return new ProductExistsResponse(exists);
+    }
 }
