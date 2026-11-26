@@ -210,7 +210,7 @@ class ProductServiceIntegrationTest {
         addProduct(products, "Batch-0");
         addProduct(products, "Batch-1").putArray("variants");
 
-        for (int index = 2; index < 10_000; index++) {
+        for (int index = 2; index < 10000; index++) {
             String name = "Batch-" + index;
             ArrayNode variants = addProduct(products, name).putArray("variants");
             variants.addObject().put("code", name + "-default").put("name", "Default");
@@ -219,11 +219,11 @@ class ProductServiceIntegrationTest {
 
         postBatch(products)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.createdProducts").value(10_000))
-                .andExpect(jsonPath("$.createdVariants").value(19_996));
+                .andExpect(jsonPath("$.createdProducts").value(10000))
+                .andExpect(jsonPath("$.createdVariants").value(19996));
 
-        assertEquals(productsBefore + 10_000, productRepository.count());
-        assertEquals(variantsBefore + 19_996, countVariants());
+        assertEquals(productsBefore + 10000, productRepository.count());
+        assertEquals(variantsBefore + 19996, countVariants());
         Long linkedVariants = jdbcTemplate.queryForObject("""
                 SELECT count(*)
                 FROM public.product_variant variant
@@ -231,7 +231,7 @@ class ProductServiceIntegrationTest {
                 WHERE product.name LIKE 'Batch-%'
                   AND variant.code IN (product.name || '-default', product.name || '-extra')
                 """, Long.class);
-        assertEquals(19_996L, linkedVariants);
+        assertEquals(19996L, linkedVariants);
     }
 
     @Test
