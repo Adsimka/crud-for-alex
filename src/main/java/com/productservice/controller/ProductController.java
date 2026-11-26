@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,23 @@ public class ProductController {
         return ResponseEntity.created(
                 buildCreateProductUri(id)
         ).build();
+    }
+
+    @PostMapping("/batch")
+    @Operation(summary = "Create products in bulk", description = "Creates up to 10000 products with their variants", responses = {
+            @ApiResponse(responseCode = "200", description = "The batch is empty", content = @Content),
+            @ApiResponse(responseCode = "201", description = "The batch has been created", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductBatchCreateResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Parameter validation error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
+            })
+    })
+    public ResponseEntity<ProductBatchCreateResponse> createBatch(@Valid @RequestBody ProductBatchCreateDto dto) {
+        ProductBatchCreateResponse response = productService.createBatch(dto);
+        return ResponseEntity.status(
+                response.createdProducts() == 0 ? HttpStatus.OK : HttpStatus.CREATED
+        ).body(response);
     }
 
     @GetMapping("/{id}")

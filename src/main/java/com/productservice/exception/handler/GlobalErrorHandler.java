@@ -3,11 +3,13 @@ package com.productservice.exception.handler;
 import com.productservice.exception.ProductNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.TransactionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,7 +36,7 @@ public class GlobalErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        log.warn("Validation failed: {}", exception.getMessage(), exception);
+        log.warn("Request validation failed with {} errors", exception.getErrorCount());
         String errorMessage = exception.getBindingResult().getFieldErrors().stream()
                 .map(error ->
                         String.format("Field '%s': %s", error.getField(), error.getDefaultMessage())
@@ -90,6 +92,17 @@ public class GlobalErrorHandler {
                 exception.getMessage()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler({DataAccessException.class, TransactionException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ProblemDetail> handleDatabaseException(RuntimeException exception) {
+        log.error("Database operation failed", exception);
+        ProblemDetail response = buildProblemDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Database operation failed"
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     private ProblemDetail buildProblemDetail(HttpStatus status, String message) {
