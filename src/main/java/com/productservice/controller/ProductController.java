@@ -1,8 +1,16 @@
 package com.productservice.controller;
 
-import com.productservice.model.dto.*;
-import com.productservice.model.filter.ProductSearchFilter;
+import com.productservice.model.dto.PageDto;
+import com.productservice.model.dto.ProductBatchCreateDto;
+import com.productservice.model.dto.ProductBatchCreateResponse;
+import com.productservice.model.dto.ProductBatchUpdateDto;
+import com.productservice.model.dto.ProductBatchUpdateResponse;
+import com.productservice.model.dto.ProductCreateDto;
+import com.productservice.model.dto.ProductExistsResponse;
+import com.productservice.model.dto.ProductReadDto;
+import com.productservice.model.dto.ProductUpdateDto;
 import com.productservice.model.filter.ProductDeleteFilter;
+import com.productservice.model.filter.ProductSearchFilter;
 import com.productservice.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -76,6 +84,27 @@ public class ProductController {
         return ResponseEntity.status(
                 response.createdProducts() == 0 ? HttpStatus.OK : HttpStatus.CREATED
         ).body(response);
+    }
+
+    @PatchMapping("/batch")
+    @Operation(summary = "Update products and variants in bulk",
+            description = "Uses the first entry for repeated product IDs and repeated variant IDs within a product",
+            responses = {
+            @ApiResponse(responseCode = "200", description = "The batch has been updated", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProductBatchUpdateResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid batch", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "A product or one of its variants was not found", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Database operation failed", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))
+            })
+    })
+    public ResponseEntity<ProductBatchUpdateResponse> updateBatch(@Valid @RequestBody ProductBatchUpdateDto dto) {
+        return ResponseEntity.ok(productService.updateBatch(dto));
     }
 
     @GetMapping("/{id}")

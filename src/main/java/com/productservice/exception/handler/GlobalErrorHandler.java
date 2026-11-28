@@ -1,6 +1,7 @@
 package com.productservice.exception.handler;
 
 import com.productservice.exception.ProductNotFoundException;
+import com.productservice.exception.ProductVariantNotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -22,10 +23,10 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalErrorHandler {
 
-    @ExceptionHandler(ProductNotFoundException.class)
+    @ExceptionHandler({ProductNotFoundException.class, ProductVariantNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ProblemDetail> handleProductNotFoundException(ProductNotFoundException exception) {
-        log.warn("Product not found: {}", exception.getMessage(), exception);
+    public ResponseEntity<ProblemDetail> handleProductNotFoundException(RuntimeException exception) {
+        log.warn("Product or variant not found: {}", exception.getMessage());
         ProblemDetail response = buildProblemDetail(
                 HttpStatus.NOT_FOUND,
                 exception.getMessage()

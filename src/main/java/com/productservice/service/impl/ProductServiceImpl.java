@@ -4,12 +4,19 @@ import com.productservice.exception.ProductNotFoundException;
 import com.productservice.mapper.ProductMapper;
 import com.productservice.model.dto.PageDto;
 import com.productservice.model.dto.ProductBatchCreateDto;
+import com.productservice.model.dto.ProductBatchCreateItemDto;
 import com.productservice.model.dto.ProductBatchCreateResponse;
+import com.productservice.model.dto.ProductBatchUpdateDto;
+import com.productservice.model.dto.ProductBatchUpdateItemDto;
+import com.productservice.model.dto.ProductBatchUpdateResponse;
 import com.productservice.model.dto.ProductCreateDto;
 import com.productservice.model.dto.ProductExistsResponse;
 import com.productservice.model.dto.ProductReadDto;
 import com.productservice.model.dto.ProductUpdateDto;
+import com.productservice.model.dto.ProductVariantCreateDto;
+import com.productservice.model.dto.ProductVariantUpdateDto;
 import com.productservice.model.dto.support.VariantRow;
+import com.productservice.model.dto.support.VariantUpdateRow;
 import com.productservice.model.entity.Product;
 import com.productservice.model.filter.ProductDeleteFilter;
 import com.productservice.model.filter.ProductSearchFilter;
@@ -24,7 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.productservice.util.constants.ErrorMessageConstants.PRODUCT_NOT_FOUND_MESSAGE;
@@ -69,6 +81,16 @@ public class ProductServiceImpl implements ProductService {
         createBatchProcess(dto, products, variants);
 
         return new ProductBatchCreateResponse(products.size(), variants.size());
+    }
+
+    @Transactional
+    @Override
+    public ProductBatchUpdateResponse updateBatch(ProductBatchUpdateDto dto) {
+
+        List<VariantUpdateRow> variants = new ArrayList<>();
+        List<Product> products = updateBatchProcess(dto, variants);
+
+        return new ProductBatchUpdateResponse(products.size(), variants.size());
     }
 
     @Override
@@ -126,21 +148,68 @@ public class ProductServiceImpl implements ProductService {
 
     private void createBatchProcess(ProductBatchCreateDto dto, List<Product> products, List<VariantRow> variants) {
 
-        dto.products().forEach(item -> {
-
+        for (ProductBatchCreateItemDto item : dto.products()) {
             Product product = productMapper.dtoToProduct(item.product());
             UUID productId = UUID.randomUUID();
             product.setId(productId);
             products.add(product);
 
-            item.variants().forEach(variant -> {
+            for (ProductVariantCreateDto variant : item.variants()) {
                 variants.add(new VariantRow(productId, variant.code(), variant.name()));
-            });
-        });
+            }
+        }
 
         productBatchRepository.insertProducts(products);
         productBatchRepository.insertVariants(variants);
 
         log.info("Saved {} products, {} variants", products.size(), variants.size());
+    }
+
+    private List<Product> updateBatchProcess(ProductBatchUpdateDto dto, List<VariantUpdateRow> variants) {
+
+        Map<UUID, ProductBatchUpdateItemDto> items = new LinkedHashMap<>();
+
+        for (ProductBatchUpdateItemDto item : dto.products()) {
+            if (items.putIfAbsent(item.id(), item) != null) {
+                log.info("Duplicate product id: {}", item.id());
+                continue;
+            }
+            Set<UUID> variantIds = new HashSet<>();
+            for (ProductVariantUpdateDto variant : item.variants()) {
+                if (!variantIds.add(variant.getId())) {
+                    log.info("Duplicate variant id: {} for product {}", variant.getId(), item.id());
+                    continue;
+                }
+                variants.add(new VariantUpdateRow(
+                        variant.getId(), item.id(), variant.getCode().orElse(null), variant.getName().orElse(null)
+                ));
+            }
+        }
+
+        List<Product> products = prepareProductUpdates(items);
+        variants.sort(Comparator.comparing(VariantUpdateRow::id));
+
+        productBatchRepository.updateProducts(products);
+        productBatchRepository.updateVariants(variants);
+
+        return products;
+    }
+
+    private List<Product> prepareProductUpdates(Map<UUID, ProductBatchUpdateItemDto> items) {
+
+        List<Product> products = new ArrayList<>(items.size());
+
+        for (Product product : productBatchRepository.findProductsForUpdate(items.keySet())) {
+            ProductBatchUpdateItemDto item = items.remove(product.getId());
+            if (item.product() != null) {
+                productMapper.update(item.product(), product);
+                products.add(product);
+            }
+        }
+        if (!CollectionUtils.isEmpty(items)) {
+            UUID missingId = items.keySet().iterator().next();
+            throw new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_MESSAGE, missingId));
+        }
+        return products;
     }
 }

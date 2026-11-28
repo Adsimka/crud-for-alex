@@ -8,6 +8,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Batch product creation](#batch-product-creation)
+  - [Batch product update](#batch-product-update)
 - [API Endpoints](#api-endpoints)
 - [Database Configuration](#database-configuration)
 - [Testing](#testing)
@@ -24,7 +25,7 @@ This is a RESTful CRUD (Create, Read, Update, Delete) application built using **
 
 - **Create** a product or create up to 10,000 products with their variants in one request.
 - **Read** products by filter or ID and check whether a product exists.
-- **Update** existing product details.
+- **Update** existing product details or update up to 10,000 products and their variants in one request.
 - **Delete** products by filter or ID.
 - **Validation and error handling** use field-level constraints and `ProblemDetail` responses.
 - **Swagger UI** provides interactive API documentation.
@@ -97,6 +98,50 @@ The example returns `201 Created` with the following counts.
 
 Products and variants are saved in one transaction. A write failure rolls back the entire request. The JDBC batch size defaults to 500 rows and can be set with `operation.batch.sql.update`.
 
+### Batch product update
+
+`PATCH /api/v1/products/batch` accepts a required `products` array containing 0 to 10,000 items. Each item identifies an existing product by its UUID in `id`.
+
+- `product` uses the same fields and validation as single-product `PATCH`. Omitted fields keep their current values. Omit `product` to update only variants.
+- `variants` can be omitted, set to `null`, or left empty. Each supplied variant needs its UUID in `id` and must belong to the enclosing product. Variant IDs are stored in `product_variant.id`.
+- Variant `code` and `name` are optional. When supplied, they must be nonblank. The maximum length is 20 characters for `code` and 50 characters for `name`.
+- A repeated product ID uses the first item. A repeated variant ID within a product uses the first variant entry.
+
+Replace the example IDs with IDs from your database.
+
+```bash
+curl -i -X PATCH http://localhost:8080/api/v1/products/batch \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "products": [
+      {
+        "id": "e11274a7-bebe-4ee0-8e0d-61c07782ffc2",
+        "product": {"name": "Cotton T-shirt"},
+        "variants": [
+          {"id": "d5c1ca45-2139-4dd4-adb9-266e5aa5eeb3", "name": "White, small"}
+        ]
+      }
+    ]
+  }'
+```
+
+A successful request returns `200 OK` with the following counts for this example.
+
+```json
+{"updatedProducts": 1, "updatedVariants": 1}
+```
+
+The counts reflect the product patches and variant entries applied after duplicates are skipped, including values that match the stored data. A product item with an omitted `product` patch contributes only to the variant count. An empty `products` array returns zero for both counts.
+
+| Status | Result |
+|--------|--------|
+| `200 OK` | Returns the product and variant update counts. |
+| `400 Bad Request` | Returns `ProblemDetail` for invalid request values. |
+| `404 Not Found` | Returns `ProblemDetail` if a product or variant is missing, or a variant belongs to another product. |
+| `500 Internal Server Error` | Returns `ProblemDetail` for a database or transaction error. |
+
+All updates run in one transaction. Any error rolls back the whole batch, including updates in earlier JDBC chunks. The JDBC batch size defaults to 500 rows and can be set with `operation.batch.sql.update`.
+
 ---
 
 ## API Endpoints
@@ -109,6 +154,7 @@ Products and variants are saved in one transaction. A write failure rolls back t
 | `GET` | `/api/v1/products` | Search products by filter |
 | `GET` | `/api/v1/products/exists/{id}` | Check whether a product exists |
 | `PATCH` | `/api/v1/products/{id}` | Update an existing product |
+| `PATCH` | `/api/v1/products/batch` | Update products and their variants |
 | `DELETE` | `/api/v1/products/{id}` | Delete a product by ID |
 | `DELETE` | `/api/v1/products` | Delete products by filter |
 
@@ -141,4 +187,4 @@ Start Docker and run the integration tests with the Maven Wrapper.
 ./mvnw test
 ```
 
-On Windows, use `.\mvnw.cmd test`. The tests activate the `test` profile and use PostgreSQL 15 through Testcontainers. They cover product updates, empty batches, insertion of 10,000 products with their variants, and rejection of oversized batches or `null` variant entries.
+On Windows, use `.\mvnw.cmd test`. The tests activate the `test` profile and use PostgreSQL 15 through Testcontainers. They cover product updates, empty batches, batch creation and updates for 10,000 products with their variants, request validation, handling of duplicate IDs, variant ownership checks, and transaction rollback.
